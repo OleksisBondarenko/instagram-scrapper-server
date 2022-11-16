@@ -44,7 +44,10 @@ def get_html_from_url(url=TEST_URL, chromedriver=CHROME_DRIVER_PATH):
     except Exception:
         driver.close()
     
-    Alert(driver).accept()
+    try:
+        Alert(driver).accept()
+    except:
+        print("no alert")
     page_source = driver.page_source
     driver.close()
     return page_source
