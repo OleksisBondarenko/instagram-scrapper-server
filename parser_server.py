@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.alert import Alert
 
 import time
 
@@ -24,23 +25,29 @@ IMPLICITLI_TIME = 0.5
 
 def get_html_from_url(url=TEST_URL, chromedriver=CHROME_DRIVER_PATH):
     chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--disable-notifications')
 
+    # with  webdriver.Chrome(chromedriver, chrome_options=chrome_options) as driver:
     driver = webdriver.Chrome(chromedriver, chrome_options=chrome_options)
     driver.implicitly_wait(IMPLICITLI_TIME)
-    driver.get(url)
-
-    wait = WebDriverWait(driver, MAX_RESPONSE_TIME)
+    try: 
+        driver.get(url)
+    except: 
+        raise Exception("Lost internet connection")
+    # wait = WebDriverWait(driver, MAX_RESPONSE_TIME)
     # wait.until()
-
     PAUSE_TIME = 3
-    driver.execute_script(
-        "document.getElementsByClassName('profile-publications__btn')[0].click();")
-    time.sleep(PAUSE_TIME)
-
+    try:
+        driver.execute_script(
+            "document.getElementsByClassName('profile-publications__btn')[0].click();")
+        time.sleep(PAUSE_TIME)
+    except Exception:
+        driver.close()
+    
+    Alert(driver).accept()
     page_source = driver.page_source
     driver.close()
     return page_source
-
 
 def get_info_about_user_by_url(url):
     html_content = get_html_from_url(url)

@@ -9,7 +9,10 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @cross_origin()
 def hello():
     url = request.args.get('url')
+    # try: 
     user_info = get_info_about_user_by_url(url)
+    # except: 
+    #     return {"status": 404, "message": "user wasn`t found"}
     return user_info
 
 
